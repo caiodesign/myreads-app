@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import * as BooksAPI from '../../BooksAPI';
 import '../../App.css';
-import Book from '../../components/ListBooks';
+import Book from '../../components/Book';
 import NavBar from '../../components/NavBar';
 import Button from '../../components/Button';
 import BookShelf from '../../components/BookShelf';
