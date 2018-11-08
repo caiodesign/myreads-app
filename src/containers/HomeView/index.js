@@ -16,6 +16,10 @@ class BooksApp extends React.Component {
     BooksAPI.getAll().then(books => this.setState({ books }));
   };
 
+  onChange = (event) => {
+    console.log(event);
+  }
+
   filterBooksByShelf = (books, shelf) => books.filter(book => book.shelf === shelf);
 
   renderBooks = () => {
@@ -28,6 +32,7 @@ class BooksApp extends React.Component {
             title={book.title}
             authors={book.authors}
             thumbnail={book.imageLinks.thumbnail}
+            onChange={this.onChange.bind(this)} // eslint-disable-line react/jsx-no-bind
           />
         ))}
       </BookShelf>));

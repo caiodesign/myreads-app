@@ -1,14 +1,20 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Select } from '../Select';
-import { Author } from './styles';
+import { Author, BookCover } from './styles';
 
 class Book extends Component {
-  renderAuthors = (authors) => {
+  onChange = (title, event) => {
+    const { onChange } = this.props;
+    const shelf = event.target.value;
+    const bookProps = { shelf, title };
+    onChange(bookProps);
+  }
+
+  renderAuthors = authors => (
     authors.map(author => (
-      <Author>{author}</Author>
-    ));
-  };
+      <Author key={author}>{author}</Author>
+    ))
+  );
 
   renderSelect = () => (
     <select>
@@ -22,10 +28,11 @@ class Book extends Component {
 
   renderBooks = () => {
     const { title, authors, thumbnail } = this.props;
+    const onChange = this.onChange.bind(this, title);
     return (
-      <div className="book">
+      <div className="book" onChange={onChange}> {/* eslint-disable-line react/jsx-no-bind */}
         <div className="book-top">
-          <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url("${thumbnail}")` }} />
+          <BookCover bg={thumbnail} />
           <div className="book-shelf-changer">
             {this.renderSelect()}
           </div>
@@ -49,6 +56,7 @@ Book.propTypes = {
   title: PropTypes.string.isRequired,
   authors: PropTypes.array.isRequired,
   thumbnail: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default Book;
