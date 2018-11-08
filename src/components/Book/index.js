@@ -1,10 +1,17 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Select } from '../Select';
+import { Author } from './styles';
 
-class ListBooks extends Component {
+class Book extends Component {
+  renderAuthors = (authors) => {
+    authors.map(author => (
+      <Author>{author}</Author>
+    ));
+  };
+
   renderBooks = () => {
-    const { title, author, thumbnail } = this.props;
+    const { title, authors, thumbnail } = this.props;
     return (
       <div className="book">
         <div className="book-top">
@@ -14,10 +21,10 @@ class ListBooks extends Component {
           </div>
         </div>
         <div className="book-title">{title}</div>
-        <div className="book-authors">{author}</div>
+        <div className="book-authors">{this.renderAuthors(authors)}</div>
       </div>
     );
-  }
+  };
 
   render() {
     return (
@@ -28,10 +35,10 @@ class ListBooks extends Component {
   }
 }
 
-ListBooks.propTypes = {
+Book.propTypes = {
   title: PropTypes.string.isRequired,
-  author: PropTypes.string.isRequired,
+  authors: PropTypes.array.isRequired,
   thumbnail: PropTypes.string.isRequired,
 };
 
-export default ListBooks;
+export default Book;
