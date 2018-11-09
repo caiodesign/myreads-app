@@ -3,18 +3,12 @@ import PropTypes from 'prop-types';
 import { Author, BookCover } from './styles';
 
 class Book extends Component {
-  onChange = (title, event) => {
+  onChange = (event, title) => {
     const { onChange } = this.props;
     const shelf = event.target.value;
     const bookProps = { shelf, title };
     onChange(bookProps);
   }
-
-  renderAuthors = authors => (
-    authors.map(author => (
-      <Author key={author}>{author}</Author>
-    ))
-  );
 
   renderSelect = () => (
     <select>
@@ -26,11 +20,17 @@ class Book extends Component {
     </select>
   );
 
+  renderAuthors = authors => (
+    authors.map(author => (
+      <Author key={author}>{author}</Author>
+    ))
+  );
+
   renderBooks = () => {
     const { title, authors, thumbnail } = this.props;
-    const onChange = this.onChange.bind(this, title);
+    const onChange = event => this.onChange(event, title);
     return (
-      <div className="book" onChange={onChange}> {/* eslint-disable-line react/jsx-no-bind */}
+      <div className="book" onChange={onChange}>
         <div className="book-top">
           <BookCover bg={thumbnail} />
           <div className="book-shelf-changer">

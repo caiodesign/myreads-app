@@ -24,6 +24,7 @@ class BooksApp extends React.Component {
 
   renderBooks = () => {
     const { books } = this.state;
+    const onChange = event => this.onChange(event);
     return shelfs.map(shelf => (
       <BookShelf key={shelf.label} title={shelf.label}>
         {this.filterBooksByShelf(books, shelf.type).map(book => (
@@ -32,7 +33,7 @@ class BooksApp extends React.Component {
             title={book.title}
             authors={book.authors}
             thumbnail={book.imageLinks.thumbnail}
-            onChange={this.onChange.bind(this)} // eslint-disable-line react/jsx-no-bind
+            onChange={onChange}
           />
         ))}
       </BookShelf>));
