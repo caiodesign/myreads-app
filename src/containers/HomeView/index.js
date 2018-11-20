@@ -17,7 +17,17 @@ class BooksApp extends React.Component {
   };
 
   onChange = (event) => {
-    console.log(event);
+    const { title, shelf } = event;
+    const { books } = this.state;
+    const book = this.getBookByTitle(title);
+    book.shelf = shelf;
+    this.setState({ books: [...books, book] });
+  }
+
+  getBookByTitle = (title) => {
+    const { books } = this.state;
+    const book = books.filter(item => item.title === title);
+    return book[0];
   }
 
   filterBooksByShelf = (books, shelf) => books.filter(book => book.shelf === shelf);
