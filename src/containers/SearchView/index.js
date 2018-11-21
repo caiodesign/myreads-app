@@ -23,9 +23,11 @@ class SearchView extends Component {
 
   getBooksByQuery = (query) => {
     BooksAPI.search(query).then((response) => {
-      this.setState({
-        books: response,
-      });
+      if (response.length > 0) {
+        this.setState({ error: false, books: response });
+      } else {
+        this.setState({ error: true, books: [] });
+      }
     });
   }
 
@@ -40,7 +42,7 @@ class SearchView extends Component {
   ));
 
   render() {
-    const { books } = this.state;
+    const { books, error } = this.state;
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -58,7 +60,8 @@ class SearchView extends Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {books && this.renderBooks(books)}
+            {books && !error && this.renderBooks(books)}
+            {error && <p>Não encontramos resultados para esta pesquisa</p>}
           </ol>
         </div>
       </div>
