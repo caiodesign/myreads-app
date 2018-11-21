@@ -30,15 +30,15 @@ class Book extends Component {
     const { title, authors, thumbnail } = this.props;
     const onChange = event => this.onChange(event, title);
     return (
-      <div className="book" onChange={onChange}>
+      <div className="book" onChange={onChange && onChange}>
         <div className="book-top">
-          <BookCover bg={thumbnail} />
+          <BookCover bg={thumbnail && thumbnail} />
           <div className="book-shelf-changer">
             {this.renderSelect()}
           </div>
         </div>
-        <div className="book-title">{title}</div>
-        <div className="book-authors">{this.renderAuthors(authors)}</div>
+        <div className="book-title">{title && title}</div>
+        <div className="book-authors">{authors && this.renderAuthors(authors)}</div>
       </div>
     );
   };
@@ -54,9 +54,9 @@ class Book extends Component {
 
 Book.propTypes = {
   title: PropTypes.string.isRequired,
-  authors: PropTypes.array.isRequired,
-  thumbnail: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+  authors: PropTypes.array,
+  thumbnail: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 export default Book;
