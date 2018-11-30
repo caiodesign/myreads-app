@@ -1,37 +1,41 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import * as BooksAPI from '../../BooksAPI';
 import { debounce } from 'lodash';
 import Book from '../../components/Book';
+import { actions } from '../../actions/books';
 
 
 class SearchView extends Component {
   state = {
-    books: [],
     query: '',
-  };
-
+  }
   getQuery = (event) => {
     this.setState({
       query: event.trim(),
     }, () => {
       const { query } = this.state;
-      if (query) return this.getBooksByQuery(query);
-      return this.setState({ books: [], query: '' });
+      return this.getBooksByQuery(query);
     });
   };
 
   getBooksByQuery = (query) => {
+    const { updateBooks, setBooksError, setBooksLoading } = this.props;
     BooksAPI.search(query).then((response) => {
-      if (response.length > 0) {
-        this.setState({ error: false, books: response });
+      if (response && response.length > 0) {
+        setBooksError(false);
+        updateBooks(response);
+        setBooksLoading(false);
       } else {
-        this.setState({ error: true, books: [] });
+        setBooksError(true);
+        updateBooks(response);
+        setBooksLoading(false);
       }
     });
   }
 
-  renderBooks = books => books.map(book => (
+  renderBooks = books => books.length > 0 && books.map(book => (
     <Book
       key={book.id}
       title={book.title}
@@ -42,7 +46,7 @@ class SearchView extends Component {
   ));
 
   render() {
-    const { books, error } = this.state;
+    const { books, error, loading } = this.props;
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -60,7 +64,7 @@ class SearchView extends Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {books && !error && this.renderBooks(books)}
+            {!error && books && this.renderBooks(books)}
             {error && <p>Não encontramos resultados para esta pesquisa</p>}
           </ol>
         </div>
@@ -69,4 +73,13 @@ class SearchView extends Component {
   }
 }
 
-export default SearchView;
+const mapStateToProps = reducer => ({ ...reducer });
+
+const mapDispatchToProps = dispatch => ({
+  updateBooks: books => dispatch(actions.updateBooks(books)),
+  setBooksError: error => dispatch(actions.setBooksError(error)),
+  setBooksLoading: loading => dispatch(actions.setBooksLoading(loading)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchView);
+

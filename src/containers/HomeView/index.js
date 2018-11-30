@@ -11,17 +11,17 @@ import { actions } from '../../actions/books';
 
 class BooksApp extends React.Component {
   componentDidMount = () => {
-    const { updateBooks } = this.props;
-    BooksAPI.getAll().then(response => updateBooks(response));
+    const { updateMyBooks } = this.props;
+    BooksAPI.getAll().then(response => updateMyBooks(response));
   };
 
   onChange = (event) => {
     const { title, shelf } = event;
-    const { myBooks, updateBooks } = this.props;
+    const { myBooks, updateMyBooks } = this.props;
     const book = this.getBookByTitle(title);
     const updatedBookList = this.deleteBookById(myBooks, book.id);
     book.shelf = shelf;
-    updateBooks([...updatedBookList, book]);
+    updateMyBooks([...updatedBookList, book]);
   }
 
   getBookByTitle = (title) => {
@@ -69,7 +69,7 @@ class BooksApp extends React.Component {
 const mapStateToProps = reducer => ({ ...reducer });
 
 const mapDispatchToProps = dispatch => ({
-  updateBooks: books => dispatch(actions.updateBooks(books)),
+  updateMyBooks: books => dispatch(actions.updateMyBooks(books)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BooksApp);
