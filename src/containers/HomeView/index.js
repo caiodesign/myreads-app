@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { connect } from 'react-redux';
 import * as BooksAPI from '../../BooksAPI';
 import '../../App.css';
 import Book from '../../components/Book';
@@ -6,40 +7,43 @@ import NavBar from '../../components/NavBar';
 import Button from '../../components/Button';
 import BookShelf from '../../components/BookShelf';
 import { shelfs } from '../../utils/constants';
+import { actions } from '../../actions/books';
 
 class BooksApp extends React.Component {
-  state = {
-    books: [],
-  };
-
-  componentWillMount = () => {
-    BooksAPI.getAll().then(books => this.setState({ books }));
+  componentDidMount = () => {
+    const { updateBooks } = this.props;
+    BooksAPI.getAll().then(response => updateBooks(response));
   };
 
   onChange = (event) => {
     const { title, shelf } = event;
-    const { books } = this.state;
+    const { myBooks, updateBooks } = this.props;
     const book = this.getBookByTitle(title);
+    const updatedBookList = this.deleteBookById(myBooks, book.id);
     book.shelf = shelf;
-    this.setState({ books: [...books, book] });
+    updateBooks([...updatedBookList, book]);
   }
 
   getBookByTitle = (title) => {
-    const { books } = this.state;
-    const book = books.filter(item => item.title === title);
+    const { myBooks } = this.props;
+    const book = myBooks.filter(item => item.title === title);
     return book[0];
   }
+
+  deleteBookById = (books, id) => (
+    books.filter(item => item.id !== id)
+  );
 
   filterBooksByShelf = (books, shelf) => books.filter(book => book.shelf === shelf);
 
   renderBooks = () => {
-    const { books } = this.state;
+    const { myBooks } = this.props;
     const onChange = event => this.onChange(event);
     return shelfs.map(shelf => (
-      <BookShelf key={shelf.label} title={shelf.label}>
-        {this.filterBooksByShelf(books, shelf.type).map(book => (
+      <BookShelf key={shelf.id} title={shelf.label}>
+        {this.filterBooksByShelf(myBooks, shelf.type).map(book => (
           <Book
-            key={book.title}
+            key={book.id}
             title={book.title}
             authors={book.authors}
             thumbnail={book.imageLinks.thumbnail}
@@ -62,4 +66,10 @@ class BooksApp extends React.Component {
   }
 }
 
-export default BooksApp;
+const mapStateToProps = reducer => ({ ...reducer });
+
+const mapDispatchToProps = dispatch => ({
+  updateBooks: books => dispatch(actions.updateBooks(books)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(BooksApp);
