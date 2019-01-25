@@ -1,27 +1,44 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Select } from '../Select';
-import { Author } from './styles';
+import { Author, BookCover } from './styles';
 
 class Book extends Component {
-  renderAuthors = (authors) => {
+  onChange = (event, title) => {
+    const { onChange } = this.props;
+    const shelf = event.target.value;
+    const bookProps = { shelf, title };
+    onChange(bookProps);
+  }
+
+  renderSelect = () => (
+    <select>
+      <option value="move" disabled>Move to...</option>
+      <option value="currentlyReading">Currently Reading</option>
+      <option value="wantToRead">Want to Read</option>
+      <option value="read">Read</option>
+      <option value="none">None</option>
+    </select>
+  );
+
+  renderAuthors = authors => (
     authors.map(author => (
-      <Author>{author}</Author>
-    ));
-  };
+      <Author key={author}>{author}</Author>
+    ))
+  );
 
   renderBooks = () => {
     const { title, authors, thumbnail } = this.props;
+    const onChange = event => this.onChange(event, title);
     return (
-      <div className="book">
+      <div className="book" onChange={onChange && onChange}>
         <div className="book-top">
-          <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url("${thumbnail}")` }} />
+          <BookCover bg={thumbnail && thumbnail} />
           <div className="book-shelf-changer">
-            <Select />
+            {this.renderSelect()}
           </div>
         </div>
-        <div className="book-title">{title}</div>
-        <div className="book-authors">{this.renderAuthors(authors)}</div>
+        <div className="book-title">{title && title}</div>
+        <div className="book-authors">{authors && this.renderAuthors(authors)}</div>
       </div>
     );
   };
@@ -37,8 +54,9 @@ class Book extends Component {
 
 Book.propTypes = {
   title: PropTypes.string.isRequired,
-  authors: PropTypes.array.isRequired,
-  thumbnail: PropTypes.string.isRequired,
+  authors: PropTypes.array,
+  thumbnail: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 export default Book;

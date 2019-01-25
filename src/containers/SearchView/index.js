@@ -1,9 +1,52 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import * as BooksAPI from '../../BooksAPI';
+import { debounce } from 'lodash';
+import Book from '../../components/Book';
+import { actions } from '../../actions/books';
+
 
 class SearchView extends Component {
+  state = {
+    query: '',
+  }
+  getQuery = (event) => {
+    this.setState({
+      query: event.trim(),
+    }, () => {
+      const { query } = this.state;
+      return this.getBooksByQuery(query);
+    });
+  };
+
+  getBooksByQuery = (query) => {
+    const { updateBooks, setBooksError, setBooksLoading } = this.props;
+    BooksAPI.search(query).then((response) => {
+      if (response && response.length > 0) {
+        setBooksError(false);
+        updateBooks(response);
+        setBooksLoading(false);
+      } else {
+        setBooksError(true);
+        updateBooks(response);
+        setBooksLoading(false);
+      }
+    });
+  }
+
+  renderBooks = books => books.length > 0 && books.map(book => (
+    <Book
+      key={book.id}
+      title={book.title}
+      authors={book.authors}
+      thumbnail={book.imageLinks && book.imageLinks.thumbnail}
+      onChange={() => console.log('select', book.title)}
+    />
+  ));
+
   render() {
+    const { books, error, loading } = this.props;
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -11,28 +54,32 @@ class SearchView extends Component {
             Close
           </Link>
           <div className="search-books-input-wrapper">
-            {/*
-              NOTES: The search from BooksAPI is limited to a particular set of search terms.
-              You can find these search terms here:
-              https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-              However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-              you don't find a specific author or title. Every search is limited by search terms.
-            */}
-            <input type="text" placeholder="Search by title or author"/>
-
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              name="search"
+              onChange={event => this.getQuery(event.target.value)}
+            />
           </div>
         </div>
         <div className="search-books-results">
-          <ol className="books-grid"></ol>
+          <ol className="books-grid">
+            {!error && books && this.renderBooks(books)}
+            {error && <p>Não encontramos resultados para esta pesquisa</p>}
+          </ol>
         </div>
       </div>
     );
   }
 }
 
-SearchView.propTypes = {
-  children: PropTypes.string,
-};
+const mapStateToProps = reducer => ({ ...reducer });
 
-export default SearchView;
+const mapDispatchToProps = dispatch => ({
+  updateBooks: books => dispatch(actions.updateBooks(books)),
+  setBooksError: error => dispatch(actions.setBooksError(error)),
+  setBooksLoading: loading => dispatch(actions.setBooksLoading(loading)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchView);
+
