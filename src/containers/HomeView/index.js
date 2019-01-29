@@ -38,6 +38,7 @@ class BooksApp extends React.Component {
 
   renderBooks = () => {
     const { myBooks } = this.props;
+    console.log(this.props)
     const onChange = event => this.onChange(event);
     return shelfs.map(shelf => (
       <BookShelf key={shelf.id} title={shelf.label}>

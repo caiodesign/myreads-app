@@ -16,6 +16,7 @@
     "jest": true
   },
   "rules": {
+    "semi": ["error", "never"],
     "import/first": 0,
     "import/no-extraneous-dependencies": 0,
     "react/default-props-match-prop-types": 0,
