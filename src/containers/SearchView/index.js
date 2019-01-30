@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from '../../BooksAPI'
-import { debounce } from 'lodash'
 import Book from '../../components/Book'
 import { actions } from '../../actions/books'
 import { getBookByTitle, deleteBookById } from '../../utils'
-
+import { debounce } from 'lodash'
 
 class SearchView extends Component {
   state = {
@@ -15,7 +14,6 @@ class SearchView extends Component {
 
   componentDidMount = () => {
     const { updateMyBooks, myBooks } = this.props
-
     if (!myBooks || myBooks.length === 0) {
       BooksAPI.getAll().then(response => updateMyBooks(response))
     }
@@ -37,13 +35,13 @@ class SearchView extends Component {
       query: event.trim(),
     }, () => {
       const { query } = this.state
-      return this.getBooksByQuery(query)
+      return this.getBooksByQuery(query)()
     })
   };
 
-  getBooksByQuery = (query) => {
-    const { updateBooks, setBooksError, setBooksLoading } = this.props;
-    BooksAPI.search(query).then((response) => {
+  getBooksByQuery = query => (
+    debounce(() => BooksAPI.search(query).then((response) => {
+      const { updateBooks, setBooksError, setBooksLoading } = this.props;
       if (response && response.length > 0) {
         setBooksError(false)
         updateBooks(response)
@@ -53,8 +51,8 @@ class SearchView extends Component {
         updateBooks(response)
         setBooksLoading(false)
       }
-    })
-  }
+    }), 4000, { trailing: true })
+  )
 
   renderBooks = (books, change) => books.length > 0 && books.map(book => (
     <Book
