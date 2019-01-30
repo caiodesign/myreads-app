@@ -3,22 +3,24 @@ const initialState = {
   myBooks: [],
   error: false,
   loading: false,
-};
+}
 
 const reducer = (state = initialState, action) => {
-  const newState = { ...state };
+  const newState = { ...state }
   switch (action.type) {
     case 'UPDATE_MY_BOOKS':
-      return { ...state, myBooks: action.myBooks };
+      console.log(1)
+      return { ...state, myBooks: action.myBooks }
     case 'UPDATE_BOOKS':
-      return { ...state, books: action.books };
+      console.log(2)
+      return { ...state, books: action.books }
     case 'SET_BOOKS_ERROR':
-      return { ...state, error: action.error };
+      return { ...state, error: action.error }
     case 'SET_BOOKS_LOADING':
-      return { ...state, loading: action.loading };
+      return { ...state, loading: action.loading }
     default:
-      return newState;
+      return newState
   }
-};
+}
 
-export default reducer;
+export default reducer
