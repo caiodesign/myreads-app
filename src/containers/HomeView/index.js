@@ -45,6 +45,7 @@ class BooksApp extends React.Component {
           <Book
             key={book.id}
             title={book.title}
+            shelf={book.shelf}
             authors={book.authors}
             thumbnail={book.imageLinks.thumbnail}
             onChange={onChange}
