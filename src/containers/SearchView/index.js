@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from '../../BooksAPI'
@@ -35,24 +36,22 @@ class SearchView extends Component {
       query: event.trim(),
     }, () => {
       const { query } = this.state
-      return this.getBooksByQuery(query)()
+      return this.getBooksByQuery(query)
     })
   };
 
-  getBooksByQuery = query => (
-    debounce(() => BooksAPI.search(query).then((response) => {
-      const { updateBooks, setBooksError, setBooksLoading } = this.props;
-      if (response && response.length > 0) {
-        setBooksError(false)
-        updateBooks(response)
-        setBooksLoading(false)
-      } else {
-        setBooksError(true)
-        updateBooks(response)
-        setBooksLoading(false)
-      }
-    }), 4000, { trailing: true })
-  )
+  getBooksByQuery = debounce(query => BooksAPI.search(query).then((response) => {
+    const { updateBooks, setBooksError, setBooksLoading } = this.props
+    if (response && response.length > 0) {
+      setBooksError(false)
+      updateBooks(response)
+      setBooksLoading(false)
+    } else {
+      setBooksError(true)
+      updateBooks(response)
+      setBooksLoading(false)
+    }
+  }), 1000, { trailing: true })
 
   renderBooks = (books, change) => books.length > 0 && books.map(book => (
     <Book
@@ -85,12 +84,24 @@ class SearchView extends Component {
         <div className="search-books-results">
           <ol className="books-grid">
             {!error && books && this.renderBooks(books, onChange)}
+            {loading && <p>loading</p>}
             {error && <p>Não encontramos resultados para esta pesquisa</p>}
           </ol>
         </div>
       </div>
     )
   }
+}
+
+SearchView.propTypes = {
+  setBooksError: PropTypes.func,
+  setBooksLoading: PropTypes.func,
+  updateMyBooks: PropTypes.func,
+  updateBooks: PropTypes.func,
+  books: PropTypes.array,
+  myBooks: PropTypes.array,
+  error: PropTypes.string,
+  loading: PropTypes.string,
 }
 
 const mapStateToProps = reducer => ({ ...reducer })
