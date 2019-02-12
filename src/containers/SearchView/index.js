@@ -100,8 +100,8 @@ SearchView.propTypes = {
   updateBooks: PropTypes.func,
   books: PropTypes.array,
   myBooks: PropTypes.array,
-  error: PropTypes.string,
-  loading: PropTypes.string,
+  error: PropTypes.bool,
+  loading: PropTypes.bool,
 }
 
 const mapStateToProps = reducer => ({ ...reducer })
